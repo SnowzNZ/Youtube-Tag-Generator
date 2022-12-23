@@ -1,27 +1,30 @@
-import pyperclip
-import lxml
-import cchardet
+"""
+Generates YouTube tags based off of top ranking videos.
+"""
+
 import os
-from requests_html import HTMLSession
+from typing import List
+
+import pyperclip  # type: ignore
 from bs4 import BeautifulSoup
+from requests_html import HTMLSession  # type: ignore
 from tqdm import tqdm
 
 session = HTMLSession()
 
 query = input("Please enter a query or title\n> ")
 
-split_query = query.split()
+SEARCH_QUERY = "+".join(query.split())
 
-search_query = "+".join(split_query)
+QUERY_URL = f"https://www.youtube.com/results?search_query={SEARCH_QUERY}"
 
-url = f"https://www.youtube.com/results?search_query={search_query}"
+tags: List[str] = []
 
-tags = []
+video_urls = []
 
 
 def get_videos(url: str):
-    global video_urls
-    video_urls = []
+    """Get urls of top ranking videos from search query."""
 
     search = session.get(url)
 
@@ -41,6 +44,7 @@ def get_videos(url: str):
 
 
 def get_tags(url: str):
+    """Gets tags from YouTube video's url."""
     video = session.get(url)
     video.html.render(sleep=0, timeout=100, keep_page=False, scrolldown=5)
 
@@ -48,27 +52,28 @@ def get_tags(url: str):
 
     num_chars = 0
 
-    f = soup.find_all("meta", {"property": "og:video:tag"})
+    tag_elements = soup.find_all("meta", {"property": "og:video:tag"})
 
-    for meta in f:
-        a = meta.attrs.get("content")
+    for meta in tag_elements:
+        element_content = meta.attrs.get("content")
         for element in tags:
             num_chars += len(element)
         if num_chars < 400:
-            if a not in tags:
-                tags.append(a)
+            if element_content not in tags:
+                tags.append(element_content)
             else:
                 pass
         else:
             break
 
 
-get_videos(url)
+get_videos(QUERY_URL)
 print("Scraping videos...")
 
 amount = int(
     input(
-        f"How many top videos out of {len(video_urls)}, do you want to take tags from?\nThe more videos, the longer it will take.\n> "
+        f"How many top videos out of {len(video_urls)}, do you want to take ta"
+        "gs from?\nThe more videos, the longer it will take.\n> "
     )
 )
 
@@ -76,19 +81,20 @@ print("Scraping tags...")
 for i in tqdm(range(amount)):
     get_tags(video_urls[i])
 
-my_list_str = str(tags).replace("[", "").replace("]", "").replace("'", "")
+TAGS = str(tags).replace("[", "").replace("]", "").replace("'", "")
 
 os.system("cls" if os.name == "nt" else "clear")
 
 print("Tags:")
-print(my_list_str)
+print(TAGS)
 copy = input("Do you want to copy the tags to the clipboard? [Y/N]\n> ")
 
 if copy.capitalize() == "Y":
-    pyperclip.copy(my_list_str)
+    pyperclip.copy(TAGS)
 else:
     pass
 
 print(
-    "Thanks for using my tool! Make sure to give it a star on GitHub if you liked it!"
+    "Thanks for using my tool! Make sure to give it a star on GitHub if you li"
+    "ked it!"
 )
