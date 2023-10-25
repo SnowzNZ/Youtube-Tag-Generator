@@ -2,7 +2,7 @@ requests_html
 bs4
 pyperclip
 faust-cchardet
-https://files.pythonhosted.org/packages/9e/86/e1f135e123344e32dd9bfcbf420dcc2566fa3894fda78b27f981e26c170d/lxml-4.9.2-cp311-cp311-win_amd64.whl
+lxml
 tqdm
 types-beautifulsoup4
 types-tqdm
