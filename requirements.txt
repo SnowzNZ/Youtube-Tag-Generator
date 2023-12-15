@@ -1,8 +1,4 @@
-requests_html
-bs4
 pyperclip
-faust-cchardet
-lxml
+requests_html
+beautifulsoup4
 tqdm
-types-beautifulsoup4
-types-tqdm
